@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PLP sticky Filter/Sort — walkthrough (KJEI-T0081) · demo only</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Italiana&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /*
+      Docs walkthrough absorb — requirements/ui-walkthough/plp-sticky-filter.html
+      Demo only (not requirements SoR). Hydrogen reuses live PLP tokens
+      (collections.$handle.tsx + FilterDrawer.tsx) and adds sticky behaviour.
+      Visual baseline: https://uat-ecom.kalyanjewellers.net/collections/ring
+      FR-PLP-06 / UC-PLP-005 / S-PLP-04 · KJEI-T0081
+    */
+    :root {
+      --plp-cream: #f8f7f1;
+      --plp-card: #fdfaf5;
+      --plp-header: #650827;
+      --plp-accent: #a30014;
+      --plp-cta: #cf254a;
+      --plp-price: #c13b59;
+    }
+    body {
+      margin: 0;
+      background: #fff;
+      color: #222;
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    }
+    .heading-font { font-family: Italiana, Georgia, serif; }
+    .font-helvetica-light {
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      font-weight: 300;
+    }
+    .font-helvetica-otf {
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    }
+
+    .demo-banner {
+      background: #111;
+      color: #f8de60;
+      text-align: center;
+      font-size: 11px;
+      padding: 6px 10px;
+      letter-spacing: 0.04em;
+    }
+    .demo-banner a { color: #ffb3c1; text-decoration: underline; }
+
+    .process-note {
+      max-width: 72rem;
+      margin: 0 auto;
+      padding: 14px 1.5rem;
+      background: #fff7f8;
+      border-bottom: 1px solid #f0e6e4;
+      font-size: 13px;
+      line-height: 1.5;
+      color: #444;
+    }
+    .process-note strong { color: var(--plp-accent); }
+    .process-note a { color: var(--plp-accent); text-decoration: underline; }
+    .process-note code {
+      font-size: 12px;
+      background: #fff;
+      padding: 1px 5px;
+      border-radius: 4px;
+      border: 1px solid #f0e6e4;
+    }
+    .process-note ol { margin: 8px 0 0 1.1rem; padding: 0; }
+    .process-note li { margin: 4px 0; }
+
+    .demo-site-header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: var(--plp-header);
+      color: #fff;
+      padding: 10px 1.5rem;
+      font-size: 12px;
+      letter-spacing: 0.04em;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 40px;
+      box-sizing: border-box;
+    }
+    .demo-site-header span { opacity: 0.85; }
+
+    .lp-banner {
+      width: 100%;
+      min-height: 140px;
+      background:
+        linear-gradient(90deg, rgba(248,247,241,0.92), rgba(232,228,209,0.75)),
+        radial-gradient(circle at 20% 40%, #e8d5c4 0%, transparent 55%),
+        radial-gradient(circle at 80% 60%, #d4c4b0 0%, transparent 50%),
+        #f8f7f1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #888;
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    /* === UAT #4 MUST: Filter + Sort remain viewport-visible while grid auto-loads === */
+    .plp-sticky-toolbar {
+      position: sticky;
+      top: 40px; /* Hydrogen: offset = live sticky site header height */
+      z-index: 40;
+      background: var(--plp-cream);
+      border-bottom: 1px solid #e8e4d1;
+      box-shadow: 0 0 0 transparent;
+      transition: box-shadow 0.2s ease;
+    }
+    .plp-sticky-toolbar.is-stuck {
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+    }
+
+    .filter-btn {
+      padding: 8px;
+      border-radius: 4px;
+      background: #000;
+      color: #fff;
+      border: 0;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .filter-btn .badge {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      min-width: 18px;
+      height: 18px;
+      padding: 0 4px;
+      border-radius: 999px;
+      background: var(--plp-cta);
+      color: #fff;
+      font-size: 10px;
+      line-height: 18px;
+      text-align: center;
+    }
+
+    .products-grid {
+      display: grid;
+      gap: 2rem 1rem;
+      grid-template-columns: repeat(1, minmax(0, 1fr));
+      margin-bottom: 2rem;
+    }
+    @media (min-width: 75em) {
+      .products-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 4rem 1rem;
+      }
+    }
+    @media (min-width: 48em) and (max-width: 74.99em) {
+      .products-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    .product-card {
+      position: relative;
+      border-radius: 12px;
+      border: 1px solid #d9dbe9;
+      background: var(--plp-card);
+      padding: 4px;
+    }
+    .product-card .media {
+      border-radius: 8px;
+      background: var(--plp-card);
+      padding: 12px;
+      min-height: 220px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .product-card img {
+      max-height: 280px;
+      width: 100%;
+      object-fit: contain;
+      background: #fff;
+    }
+    .product-card .price {
+      font-size: 18px;
+      font-weight: 500;
+      color: var(--plp-price);
+    }
+    .product-card .sku-meta {
+      margin-top: 4px;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: #888;
+    }
+    .product-card h4 {
+      margin: 6px 0 0;
+      font-size: 14px;
+      line-height: 1.35;
+      color: #333;
+      font-weight: 400;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .load-row {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      padding: 28px 12px 16px;
+      min-height: 64px;
+      color: #666;
+      font-size: 13px;
+    }
+    .spinner {
+      width: 28px;
+      height: 28px;
+      border: 3px solid #f0e6e4;
+      border-top-color: var(--plp-accent);
+      border-radius: 50%;
+      animation: plp-spin 0.7s linear infinite;
+    }
+    @keyframes plp-spin { to { transform: rotate(360deg); } }
+    .hidden { display: none !important; }
+    .end-state {
+      text-align: center;
+      color: #6e7191;
+      font-size: 13px;
+      padding: 8px 0 40px;
+    }
+
+    .filter-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 60;
+      display: flex;
+      background: rgba(0, 0, 0, 0.4);
+    }
+    .filter-panel {
+      width: 75%;
+      max-width: 520px;
+      height: 100%;
+      background: #f3f3f3;
+      display: flex;
+      flex-direction: column;
+      animation: slideInLeft 0.25s ease-out;
+    }
+    @keyframes slideInLeft {
+      from { transform: translateX(-100%); }
+      to { transform: translateX(0); }
+    }
+    .filter-panel header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.5rem 2rem 0;
+    }
+    .filter-panel .brand {
+      font-family: Italiana, Georgia, serif;
+      font-size: 22px;
+      color: var(--plp-header);
+    }
+    .filter-panel .filters-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 1.5rem 2rem 0;
+    }
+    .filter-panel .filters-title h2 {
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      margin: 0;
+    }
+    .filter-panel .count-pill {
+      border-radius: 8px;
+      background: #ddd9c7;
+      padding: 2px 12px;
+      font-size: 14px;
+    }
+    .filter-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.5rem 2rem 1rem;
+    }
+    .filter-section { margin-bottom: 1.75rem; }
+    .filter-section h3 {
+      margin: 0 0 0.85rem;
+      font-size: 18px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    .filter-section label {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      margin-bottom: 0.85rem;
+      cursor: pointer;
+      font-size: 14px;
+      text-transform: uppercase;
+      color: #1f3550;
+    }
+    .filter-section input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      accent-color: var(--plp-cta);
+    }
+    .filter-footer {
+      display: flex;
+      gap: 1rem;
+      padding: 12px 2rem;
+      border-top: 1px solid #e5e5e5;
+      background: #f3f3f3;
+    }
+    .filter-footer button {
+      flex: 1;
+      border-radius: 999px;
+      padding: 10px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .filter-footer .clear {
+      border: 1px solid #000;
+      background: transparent;
+    }
+    .filter-footer .apply {
+      border: 0;
+      background: var(--plp-cta);
+      color: #fff;
+    }
+    .filter-scrim { flex: 1; border: 0; background: transparent; cursor: pointer; }
+
+    .impl-box {
+      max-width: 72rem;
+      margin: 0 auto 2rem;
+      padding: 0 1.5rem;
+    }
+    .impl-box details {
+      background: #f8f7f1;
+      border: 1px solid #e8e4d1;
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-size: 13px;
+      color: #444;
+    }
+    .impl-box summary {
+      cursor: pointer;
+      font-weight: 600;
+      color: var(--plp-accent);
+    }
+    .impl-box pre {
+      margin: 10px 0 0;
+      padding: 12px;
+      background: #111;
+      color: #f5f5f5;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    @media (max-width: 1023px) {
+      .desktop-only { display: none !important; }
+    }
+    @media (min-width: 1024px) {
+      .mobile-only { display: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="demo-banner">
+    S-PLP-04 · sticky Filter/Sort · KJEI-T0081 ·
+    <a href="changelog.html" style="color:#ffb3c1">changelog</a> ·
+    <a href="plp-auto-load.html" style="color:#ffb3c1">S-PLP-03 auto-load</a> ·
+    baseline
+    <a href="https://uat-ecom.kalyanjewellers.net/collections/ring" target="_blank" rel="noopener">UAT Ring PLP</a>
+  </div>
+
+  <div class="process-note">
+    <strong>Walkthrough demo only — not requirements SoR.</strong>
+    Demonstrates <code>FR-PLP-06</code> / <code>UC-PLP-005</code> / <code>S-PLP-04</code>:
+    Filter + Sort strip stays in the viewport while the listing auto-loads; open Filter / change Sort from any scroll depth; Apply still resets to the first batch.
+    Customer-visible PLP labels must stay exactly as live UAT —
+    Filter icon, title + item count, <code>Home | Ring</code>, <code>Sort By: Relevance</code>, existing Filter drawer
+    (<code>FILTERS</code>, Clear all, Apply).
+    <strong>No new customer labels/text</strong> in Hydrogen.
+    Look-and-feel SoR remains
+    <a href="https://uat-ecom.kalyanjewellers.net/collections/ring" target="_blank" rel="noopener">UAT Ring PLP</a>.
+    Auto-load process alone is also covered by <a href="plp-auto-load.html">plp-auto-load.html</a> (S-PLP-03).
+  </div>
+
+  <div class="demo-site-header" aria-hidden="true">
+    <strong>Kalyan India UAT</strong>
+    <span></span>
+  </div>
+
+  <div class="lp-banner" aria-hidden="true">
+    
+  </div>
+
+  <!-- STICKY TOOLBAR — same labels as live UAT PLP; only behaviour change is sticky -->
+  <div class="plp-sticky-toolbar" id="plp-sticky-toolbar">
+    <div class="desktop-only px-6 py-4 lg:px-16">
+      <div class="flex items-center gap-3">
+        <button type="button" class="filter-btn" id="filter-open-d" aria-label="Filters" title="Filters">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M3 5h18v2.2L14 14.5V21l-4-2v-4.5L3 7.2V5z"/>
+          </svg>
+          <span class="badge hidden" id="filter-badge-d">0</span>
+        </button>
+        <h1 class="text-4xl font-helvetica-light text-[#999] m-0">
+          Ring
+          <span class="text-3xl font-normal text-[#000] font-helvetica-otf normal-case" id="plp-count">(0 items)</span>
+        </h1>
+      </div>
+      <div class="mt-2 flex items-center justify-between gap-4 text-[#000]">
+        <div class="font-helvetica-light text-sm">
+          <span class="text-[#9B9B9B]">Home</span>
+          <span class="text-[#ccc]"> | </span>
+          <span class="text-black">Ring</span>
+        </div>
+        <div class="relative flex items-center gap-2">
+          <span class="text-[#000] text-lg">Sort By:</span>
+          <select id="sort-select" class="rounded bg-transparent text-[#a30014] text-lg cursor-pointer border-0 outline-none" aria-label="Sort By">
+            <option value="relevance">Relevance</option>
+            <option value="price-asc">Price: Low to High</option>
+            <option value="price-desc">Price: High to Low</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="mobile-only p-4">
+      <div class="flex items-center gap-3">
+        <h1 class="text-2xl font-helvetica-light text-[#999] m-0">
+          Ring <span id="plp-count-m" class="text-[#000]">(0 items)</span>
+        </h1>
+      </div>
+      <div class="mt-3 flex items-center justify-between gap-3">
+        <button type="button" class="filter-btn" id="filter-open-m" aria-label="Filters">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M3 5h18v2.2L14 14.5V21l-4-2v-4.5L3 7.2V5z"/>
+          </svg>
+          <span class="badge hidden" id="filter-badge-m">0</span>
+        </button>
+        <div class="flex items-center gap-2">
+          <span class="text-[#000] text-base">Sort By:</span>
+          <select id="sort-select-m" class="rounded bg-transparent text-[#a30014] text-base cursor-pointer border-0 outline-none" aria-label="Sort By">
+            <option value="relevance">Relevance</option>
+            <option value="price-asc">Price: Low to High</option>
+            <option value="price-desc">Price: High to Low</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="collection px-6 py-2 lg:px-16" style="position:relative">
+    <div class="products-grid" id="plp-grid"></div>
+    <div class="load-row" id="load-row" aria-live="polite">
+      <div class="spinner hidden" id="spinner"></div>
+      <span id="load-label"></span>
+    </div>
+    <div class="end-state hidden" id="end-state" aria-hidden="true"></div>
+    <div id="sentinel" style="height:1px" aria-hidden="true"></div>
+  </div>
+
+  <div class="impl-box">
+    <details open>
+      <summary>Hydrogen implementation notes (author only — KJEI-T0081)</summary>
+      <pre>1. Keep existing Filter + title/count + breadcrumbs + Sort labels from collections.$handle.tsx — do not add new customer text.
+2. Wrap that existing toolbar in sticky:
+     position: sticky; top: &lt;site-header-height&gt;; z-index: above grid; background: #f8f7f1;
+3. Desktop + mobile toolbars (both currently scroll away).
+4. FilterDrawer unchanged. Sticky = trigger strip only.
+5. Pair with TD-0024 / UC-PLP-004 auto-load: append batches; filter/sort resets to first batch.
+6. Cards / chrome SoR = live UAT Ring. New Hydrogen TD for sticky (do not reuse TD-0024 as sticky SoR).</pre>
+    </details>
+  </div>
+
+  <div class="filter-overlay hidden" id="filter-overlay" role="dialog" aria-modal="true" aria-labelledby="filters-heading">
+    <div class="filter-panel">
+      <header>
+        <div class="brand">Kalyan</div>
+        <button type="button" id="filter-close" aria-label="Close filters" style="border:0;background:transparent;cursor:pointer;font-size:22px;color:#9b9b9b">×</button>
+      </header>
+      <div class="filters-title">
+        <h2 id="filters-heading">FILTERS</h2>
+        <span class="count-pill" id="selected-count">0</span>
+      </div>
+      <div class="filter-body" id="filter-body"></div>
+      <div class="filter-footer">
+        <button type="button" class="clear" id="filter-clear">Clear all</button>
+        <button type="button" class="apply" id="filter-apply">Apply</button>
+      </div>
+    </div>
+    <button type="button" class="filter-scrim" id="filter-scrim" aria-label="Close filters overlay"></button>
+  </div>
+
+  <script>
+    (function () {
+      var BATCH = 8;
+      var FETCH_MS = 650;
+      /* Names aligned with live UAT Ring PLP specimen products */
+      var NAMES = [
+        'Kusumaguchha', 'Pushpadhara', 'Mayurika', 'Trishakha', 'Kadambari', 'Patraveni',
+        'Pakshika', 'Premlipi', 'Yugali', 'Varchas', 'Vahinika', 'Samyojak',
+        'Panchapushpa', 'Vidyut', 'Bhramari', 'Manika', 'Jaalrekha', 'Raja',
+        'Gulabpankh', 'Manikachakra', 'Shaivala', 'Nagam', 'Pushpavali', 'Yugmika'
+      ];
+      var PRICES = [
+        30764.76, 67527.9, 0, 76744.8, 53146.8, 55240.05,
+        34182.9, 36252, 18639, 42000, 38500, 146051.1,
+        70463.25, 55812.15, 36742.73, 70742.48, 106565.4, 89000,
+        45000, 111809.45, 52000, 28000, 61000, 33500
+      ];
+
+      var FILTER_SECTIONS = [
+        {
+          id: 'availability',
+          label: 'Availability',
+          values: [
+            { id: 'in', label: 'In stock', count: 18 },
+            { id: 'out', label: 'Out of stock', count: 6 },
+          ],
+        },
+        {
+          id: 'metal',
+          label: 'Metal',
+          values: [
+            { id: '22k', label: '22K', count: 14 },
+            { id: '18k', label: '18K', count: 7 },
+            { id: '14k', label: '14K', count: 3 },
+          ],
+        },
+        {
+          id: 'price',
+          label: 'Price',
+          values: [
+            { id: 'u25', label: 'Under ₹25,000', count: 5 },
+            { id: '25-50', label: '₹25,000 – ₹50,000', count: 9 },
+            { id: '50p', label: 'Above ₹50,000', count: 10 },
+          ],
+        },
+      ];
+
+      function formatINR(n) {
+        if (!n) return '₹0.00';
+        return '₹' + Number(n).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      }
+
+      function placeholderSvg(label) {
+        var safe = encodeURIComponent(label.slice(0, 18));
+        return 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(
+          '<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400">' +
+          '<rect fill="#ffffff" width="400" height="400"/>' +
+          '<circle cx="200" cy="170" r="70" fill="none" stroke="#e8e4d1" stroke-width="8"/>' +
+          '<text x="200" y="300" text-anchor="middle" fill="#999" font-family="Georgia,serif" font-size="18">' +
+          label.replace(/[<>&]/g, '') + '</text></svg>'
+        );
+      }
+
+      function buildCatalogue() {
+        return NAMES.map(function (name, i) {
+          var price = PRICES[i] || (18000 + i * 2500);
+          return {
+            id: 'RING-' + String(i + 1).padStart(2, '0'),
+            title: name + ' | 22K Gold Ring | Kalyan Jewellers',
+            sku: 'RING-22K-' + (i + 1),
+            price: price,
+            featured: i,
+            image: placeholderSvg(name),
+            inStock: i % 4 !== 3,
+            karat: i % 5 === 0 ? '18k' : i % 7 === 0 ? '14k' : '22k',
+            band: price < 25000 ? 'u25' : price < 50000 ? '25-50' : '50p',
+          };
+        });
+      }
+
+      var all = buildCatalogue();
+      var sortMode = 'relevance';
+      var draftFilters = {};
+      var appliedFilters = {};
+      var shown = [];
+      var nextIndex = 0;
+      var loading = false;
+
+      var grid = document.getElementById('plp-grid');
+      var spinner = document.getElementById('spinner');
+      var loadLabel = document.getElementById('load-label');
+      var endState = document.getElementById('end-state');
+      var overlay = document.getElementById('filter-overlay');
+      var toolbar = document.getElementById('plp-sticky-toolbar');
+
+      function selectedCount(map) {
+        return Object.keys(map).filter(function (k) { return map[k]; }).length;
+      }
+
+      function passesFilters(p, map) {
+        var keys = Object.keys(map).filter(function (k) { return map[k]; });
+        if (!keys.length) return true;
+        var ok = true;
+        var avail = keys.filter(function (k) { return k.indexOf('availability:') === 0; });
+        var metal = keys.filter(function (k) { return k.indexOf('metal:') === 0; });
+        var price = keys.filter(function (k) { return k.indexOf('price:') === 0; });
+        if (avail.length) {
+          var wantIn = map['availability:in'];
+          var wantOut = map['availability:out'];
+          if (wantIn && !wantOut && !p.inStock) ok = false;
+          if (wantOut && !wantIn && p.inStock) ok = false;
+        }
+        if (metal.length && ok) {
+          ok = metal.some(function (k) { return k === 'metal:' + p.karat; });
+        }
+        if (price.length && ok) {
+          ok = price.some(function (k) { return k === 'price:' + p.band; });
+        }
+        return ok;
+      }
+
+      function filteredAll() {
+        return all.filter(function (p) { return passesFilters(p, appliedFilters); });
+      }
+
+      function sortedAll() {
+        var copy = filteredAll().slice();
+        if (sortMode === 'price-asc') copy.sort(function (a, b) { return a.price - b.price; });
+        else if (sortMode === 'price-desc') copy.sort(function (a, b) { return b.price - a.price; });
+        else copy.sort(function (a, b) { return a.featured - b.featured; }); // relevance / featured order
+        return copy;
+      }
+
+      function chipLabel(key) {
+        var parts = key.split(':');
+        var section = FILTER_SECTIONS.find(function (s) { return s.id === parts[0]; });
+        var value = section && section.values.find(function (v) { return v.id === parts[1]; });
+        return value ? value.label : key;
+      }
+
+      function updateFilterBadges() {
+        var n = selectedCount(appliedFilters);
+        ['d', 'm'].forEach(function (sfx) {
+          var badge = document.getElementById('filter-badge-' + sfx);
+          if (n) {
+            badge.textContent = String(n);
+            badge.classList.remove('hidden');
+          } else {
+            badge.classList.add('hidden');
+          }
+        });
+        document.getElementById('selected-count').textContent = String(n);
+      }
+
+      function updateChrome() {
+        var total = filteredAll().length;
+        document.getElementById('plp-count').textContent = '(' + total + ' items)';
+        document.getElementById('plp-count-m').textContent = '(' + total + ' items)';
+        var done = nextIndex >= total;
+        endState.classList.toggle('hidden', !done || loading);
+        if (done && !loading) {
+          loadLabel.textContent = '';
+          spinner.classList.add('hidden');
+        }
+        updateFilterBadges();
+      }
+
+      function cardHtml(p) {
+        return (
+          '<article class="product-card">' +
+            '<div class="media"><img src="' + p.image + '" alt="" loading="lazy" /></div>' +
+            '<div class="p-3">' +
+              '<div class="price">' + formatINR(p.price) + '</div>' +
+              '<p class="sku-meta">' + p.sku + ' · SKU aggregate</p>' +
+              '<h4>' + p.title + '</h4>' +
+            '</div>' +
+          '</article>'
+        );
+      }
+
+      function render() {
+        grid.innerHTML = shown.map(cardHtml).join('');
+        updateChrome();
+      }
+
+      function appendBatch() {
+        if (loading) return;
+        var catalogue = sortedAll();
+        if (nextIndex >= catalogue.length) {
+          updateChrome();
+          return;
+        }
+        loading = true;
+        spinner.classList.remove('hidden');
+        loadLabel.textContent = '';
+        endState.classList.add('hidden');
+
+        window.setTimeout(function () {
+          var catalogueNow = sortedAll();
+          var slice = catalogueNow.slice(nextIndex, nextIndex + BATCH);
+          nextIndex += slice.length;
+          shown = shown.concat(slice);
+          loading = false;
+          spinner.classList.add('hidden');
+          loadLabel.textContent = '';
+          render();
+        }, FETCH_MS);
+      }
+
+      function resetListing() {
+        shown = [];
+        nextIndex = 0;
+        loading = false;
+        spinner.classList.add('hidden');
+        loadLabel.textContent = '';
+        endState.classList.add('hidden');
+        render();
+        appendBatch();
+      }
+
+      function renderFilterBody() {
+        var html = FILTER_SECTIONS.map(function (section) {
+          var values = section.values.map(function (v) {
+            var key = section.id + ':' + v.id;
+            var checked = draftFilters[key] ? ' checked' : '';
+            return (
+              '<label><input type="checkbox" data-filter="' + key + '"' + checked + ' />' +
+              '<span>' + v.label + ' <span style="color:#cf254a">(' + v.count + ')</span></span></label>'
+            );
+          }).join('');
+          return '<section class="filter-section"><h3>' + section.label + '</h3>' + values + '</section>';
+        }).join('');
+        document.getElementById('filter-body').innerHTML = html;
+        document.getElementById('selected-count').textContent = String(selectedCount(draftFilters));
+      }
+
+      function openFilter() {
+        draftFilters = Object.assign({}, appliedFilters);
+        renderFilterBody();
+        overlay.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closeFilter() {
+        overlay.classList.add('hidden');
+        document.body.style.overflow = '';
+      }
+
+      document.getElementById('filter-open-d').addEventListener('click', openFilter);
+      document.getElementById('filter-open-m').addEventListener('click', openFilter);
+      document.getElementById('filter-close').addEventListener('click', closeFilter);
+      document.getElementById('filter-scrim').addEventListener('click', closeFilter);
+
+      document.getElementById('filter-body').addEventListener('change', function (e) {
+        var t = e.target;
+        if (!t || !t.getAttribute('data-filter')) return;
+        var key = t.getAttribute('data-filter');
+        if (t.checked) draftFilters[key] = true;
+        else delete draftFilters[key];
+        document.getElementById('selected-count').textContent = String(selectedCount(draftFilters));
+      });
+
+      document.getElementById('filter-clear').addEventListener('click', function () {
+        draftFilters = {};
+        renderFilterBody();
+      });
+
+      document.getElementById('filter-apply').addEventListener('click', function () {
+        appliedFilters = Object.assign({}, draftFilters);
+        closeFilter();
+        resetListing();
+      });
+
+      function onSort(el) {
+        el.addEventListener('change', function () {
+          sortMode = el.value;
+          document.getElementById('sort-select').value = sortMode;
+          document.getElementById('sort-select-m').value = sortMode;
+          resetListing();
+        });
+      }
+      onSort(document.getElementById('sort-select'));
+      onSort(document.getElementById('sort-select-m'));
+
+      new IntersectionObserver(
+        function (entries) {
+          entries.forEach(function (entry) {
+            if (!entry.isIntersecting || loading) return;
+            if (nextIndex >= sortedAll().length) return;
+            appendBatch();
+          });
+        },
+        { root: null, rootMargin: '120px', threshold: 0 }
+      ).observe(document.getElementById('sentinel'));
+
+      var banner = document.querySelector('.lp-banner');
+      if (banner && 'IntersectionObserver' in window) {
+        new IntersectionObserver(
+          function (entries) {
+            entries.forEach(function (entry) {
+              toolbar.classList.toggle('is-stuck', !entry.isIntersecting);
+            });
+          },
+          { root: null, threshold: 0 }
+        ).observe(banner);
+      }
+
+      resetListing();
+    })();
+  </script>
+</body>
+</html>

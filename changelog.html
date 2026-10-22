@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Walkthrough change log — Client Demo</title>
+  <link rel="stylesheet" href="css/storefront.css" />
+  <link rel="stylesheet" href="css/demo.css" />
+  <style>
+    body { background: #fdfaf5; font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; }
+    main { max-width: 720px; margin: 0 auto; padding: 2rem 1rem 4rem; }
+    h1 { font-size: 1.5rem; margin: 0 0 0.5rem; }
+    .meta { color: #666; font-size: 0.9rem; margin-bottom: 1.5rem; }
+    article { background: #fff; border-radius: 12px; padding: 1rem 1.25rem; margin-bottom: 1rem; border: 1px solid #f0e6e4; }
+    article h2 { font-size: 1.1rem; margin: 0 0 0.35rem; color: #cf254a; }
+    article .date { font-size: 0.8rem; color: #999; }
+    ul { margin: 0.5rem 0 0; padding-left: 1.2rem; }
+    li { margin: 0.25rem 0; font-size: 0.95rem; }
+    .sources { font-size: 0.8rem; color: #666; margin-top: 0.75rem; }
+  </style>
+</head>
+<body>
+  <div class="demo-banner">Walkthrough change log</div>
+  <main>
+    <h1>Walkthrough change log</h1>
+    <p class="meta">Demo plays only — not the requirements source. Newest first.</p>
+    <div id="log"></div>
+    <p class="meta"><a href="index.html">Home</a> · <a href="chandra/index.html">Chandra home</a> · <a href="chandra/plp.html">Chandra PLP</a> · <a href="chandra/pdp.html">Chandra PDP</a> · <a href="plp.html">PLP</a> · <a href="plp-auto-load.html">PLP auto-load</a> · <a href="plp-sticky-filter.html">PLP sticky Filter</a> · <a href="pdp.html">PDP</a> · <a href="pdp-product-summary.html">Product Summary</a> · <a href="pdp-price-breakup.html">Price Breakup</a> · <a href="pdp-stone-metal-details.html">Stone / metal tables</a> · <a href="pdp-no-stone-hide-diamond-tab.html">No-stone hide Diamond tab</a></p>
+  </main>
+  <script src="js/walkthrough-log.js"></script>
+  <script>
+    const root = document.getElementById('log');
+    const entries = (window.WalkthroughLog && window.WalkthroughLog.ENTRIES) || [];
+    entries.forEach(function (entry) {
+      const article = document.createElement('article');
+      const changes = (entry.changes || [])
+        .map(function (c) {
+          return '<li><strong>' + c.play + '</strong> · ' + c.kind + ' — ' + c.detail + '</li>';
+        })
+        .join('');
+      article.innerHTML =
+        '<div class="date">' + entry.date + '</div>' +
+        '<h2>' + entry.title + '</h2>' +
+        '<p>' + entry.summary + '</p>' +
+        '<ul>' + changes + '</ul>' +
+        '<p class="sources">Sources: ' + (entry.sources || []).join(' · ') + '</p>';
+      root.appendChild(article);
+    });
+  </script>
+</body>
+</html>

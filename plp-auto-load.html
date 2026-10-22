@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PLP auto-load process — walkthrough (KJEI-T0075) · not UI SoR</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Italiana&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/storefront.css" />
+  <link rel="stylesheet" href="css/collections.css" />
+  <link rel="stylesheet" href="css/demo.css" />
+  <style>
+    .heading-font { font-family: Italiana, Georgia, serif; }
+    .font-helvetica-light { font-family: "Helvetica Neue LT Std 45 Light", "Helvetica Neue", Helvetica, Arial, sans-serif; font-weight: 300; }
+    .font-helvetica-otf { font-family: "Helvetica Neue OTF", "Helvetica Neue", Helvetica, Arial, sans-serif; }
+    .process-note {
+      max-width: 72rem;
+      margin: 0 auto;
+      padding: 12px 1.5rem;
+      background: #fff7f8;
+      border-bottom: 1px solid #f0e6e4;
+      font-size: 13px;
+      line-height: 1.45;
+      color: #444;
+    }
+    .process-note strong { color: #a30014; }
+    .process-note a { color: #a30014; text-decoration: underline; }
+    .process-note code { font-size: 12px; background: #fff; padding: 1px 5px; border-radius: 4px; }
+    .load-row {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      padding: 28px 12px 16px;
+      min-height: 64px;
+      color: #666;
+      font-size: 13px;
+    }
+    .spinner {
+      width: 28px;
+      height: 28px;
+      border: 3px solid #f0e6e4;
+      border-top-color: #a30014;
+      border-radius: 50%;
+      animation: plp-spin 0.7s linear infinite;
+    }
+    @keyframes plp-spin { to { transform: rotate(360deg); } }
+    .hidden { display: none !important; }
+    .end-state {
+      text-align: center;
+      color: #6e7191;
+      font-size: 13px;
+      padding: 8px 0 32px;
+    }
+    .status-line {
+      font-size: 12px;
+      color: #666;
+      margin-top: 8px;
+    }
+    .status-line strong { color: #a30014; }
+  </style>
+</head>
+<body>
+  <div class="demo-banner">
+    S-PLP-03 · <strong>auto-load process only</strong> · KJEI-T0075 ·
+    <a href="changelog.html" style="color:#ffb3c1">changelog</a> ·
+    <a href="plp.html" style="color:#ffb3c1">ATC PLP</a>
+  </div>
+
+  <div class="process-note">
+    <strong>Not a look-and-feel / page UI reference.</strong>
+    Visual SoR for PLP chrome, cards, header, and sort remains the live storefront —
+    <a href="https://uat-ecom.kalyanjewellers.net/collections/ring" target="_blank" rel="noopener">UAT Ring collection</a>
+    (and production when cut over). This page exists only to demo the
+    <code>FR-PLP-05</code> / <code>UC-PLP-004</code> / <code>S-PLP-03</code>
+    <strong>auto-load process</strong>: first batch → scroll append → end stop → sort reset.
+    Do <strong>not</strong> copy card styling, spacing, or chrome from this specimen into Hydrogen.
+    Not shown: cart, <code>OI-26</code> URL/Back / failed-fetch copy.
+  </div>
+
+  <!-- Same toolbar shell as plp.html / collections.$handle — process demo only -->
+  <div class="bg-[#f8f7f1] flex flex-col py-8 2xl:px-[5rem] lg:px-[4rem] p-6 lg:block hidden">
+    <div class="flex items-center gap-3">
+      <button type="button" class="p-2 rounded bg-black text-white shadow-sm cursor-pointer" aria-label="Filters" title="Filter UI not part of this process demo">▣</button>
+      <h1 class="text-4xl font-helvetica-light text-[#999]">
+        Rings
+        <span class="text-3xl font-normal text-[#000] font-helvetica-otf normal-case" id="plp-count">(0 items)</span>
+      </h1>
+    </div>
+    <div class="mt-2 flex items-center justify-between gap-4 text-[#000] md:text-[13px]">
+      <div class="font-helvetica-light text-sm text-gray-600">
+        <a href="index.html" class="hover:underline">Home</a> / Rings
+      </div>
+      <div class="relative flex items-center gap-2">
+        <span class="text-[#000] text-lg">Sort By:</span>
+        <label>
+          <select id="sort-select" class="rounded bg-transparent text-[#a30014] text-lg cursor-pointer border-0 outline-none" aria-label="Sort By">
+            <option value="featured">Featured</option>
+            <option value="price-asc">Price: Low to High</option>
+            <option value="price-desc">Price: High to Low</option>
+          </select>
+        </label>
+      </div>
+    </div>
+    <p class="status-line">Process: loaded <strong id="loaded-count">0</strong> of <strong id="total-count">0</strong> · no page numbers · auto-load on scroll</p>
+  </div>
+
+  <div class="bg-[#f8f7f1] p-6 lg:hidden">
+    <h1 class="text-3xl font-helvetica-light text-[#999]">Rings <span id="plp-count-m" class="text-[#000]">(0)</span></h1>
+  </div>
+
+  <div class="collection 2xl:px-[5rem] lg:px-[4rem] p-6" style="position:relative">
+    <div class="products-grid" id="plp-grid"></div>
+    <div class="load-row" id="load-row" aria-live="polite">
+      <div class="spinner hidden" id="spinner"></div>
+      <span id="load-label"></span>
+    </div>
+    <div class="end-state hidden" id="end-state">End of listing — auto-load stopped (process demo).</div>
+    <div id="sentinel" style="height:1px" aria-hidden="true"></div>
+  </div>
+
+  <script>
+    (function () {
+      var BATCH = 8;
+      var FETCH_MS = 650;
+      var PLACEHOLDER = 'assets/1stimage.webp';
+      var NAMES = [
+        'Pushpadaan', 'Parnavega', 'Madhunika', 'Kamalika', 'Urmika', 'Dvispanda',
+        'Vajramadhya', 'Dvinetra', 'Leherika', 'Ashtapushpa', 'Vajramala', 'Spandana',
+        'Katlika', 'Suparna', 'Kusumvrit', 'Kuntalika', 'Shivank', 'Morni',
+        'Manikarekha', 'Kusumaguchha', 'Nagam', 'Pushpavali', 'Shaivala', 'Yugmika'
+      ];
+
+      function formatINR(n) {
+        return '₹' + Number(n).toLocaleString('en-IN');
+      }
+
+      function buildCatalogue() {
+        return NAMES.map(function (name, i) {
+          return {
+            id: 'RING-' + String(i + 1).padStart(2, '0'),
+            title: name + ' | 22K Gold Ring | Kalyan Jewellers',
+            sku: 'RING-22K-' + (i + 1),
+            price: 18000 + ((i * 3711) % 90000),
+            featured: i,
+            image: PLACEHOLDER,
+          };
+        });
+      }
+
+      var all = buildCatalogue();
+      var sortMode = 'featured';
+      var shown = [];
+      var nextIndex = 0;
+      var loading = false;
+
+      var grid = document.getElementById('plp-grid');
+      var spinner = document.getElementById('spinner');
+      var loadLabel = document.getElementById('load-label');
+      var endState = document.getElementById('end-state');
+      var sortSelect = document.getElementById('sort-select');
+
+      function sortedAll() {
+        var copy = all.slice();
+        if (sortMode === 'price-asc') copy.sort(function (a, b) { return a.price - b.price; });
+        else if (sortMode === 'price-desc') copy.sort(function (a, b) { return b.price - a.price; });
+        else copy.sort(function (a, b) { return a.featured - b.featured; });
+        return copy;
+      }
+
+      function updateChrome() {
+        var total = all.length;
+        document.getElementById('plp-count').textContent = '(' + total + ' items)';
+        document.getElementById('plp-count-m').textContent = '(' + total + ')';
+        document.getElementById('loaded-count').textContent = String(shown.length);
+        document.getElementById('total-count').textContent = String(total);
+        var done = nextIndex >= total;
+        endState.classList.toggle('hidden', !done || loading);
+        if (done && !loading) {
+          loadLabel.textContent = '';
+          spinner.classList.add('hidden');
+        }
+      }
+
+      function cardHtml(p) {
+        return (
+          '<div class="group relative block rounded-xl border border-[#d9dbe9] bg-[#fdfaf5] p-1">' +
+            '<div class="relative rounded-lg bg-[#fdfaf5] p-3">' +
+              '<img src="' + p.image + '" alt="" class="mx-auto h-[310px] w-full object-contain bg-white" />' +
+            '</div>' +
+            '<div class="p-3">' +
+              '<div class="text-[18px] font-medium text-[#c13b59]">' + formatINR(p.price) + '</div>' +
+              '<p class="mt-1 font-sans text-[11px] uppercase tracking-wide text-gray-500">' + p.sku + ' · SKU aggregate</p>' +
+              '<h4 class="mt-1 mb-[2px] line-clamp-2 text-sm leading-5 text-[#333]">' + p.title + '</h4>' +
+            '</div>' +
+          '</div>'
+        );
+      }
+
+      function render() {
+        grid.innerHTML = shown.map(cardHtml).join('');
+        updateChrome();
+      }
+
+      function appendBatch() {
+        if (loading) return;
+        var catalogue = sortedAll();
+        if (nextIndex >= catalogue.length) {
+          updateChrome();
+          return;
+        }
+        loading = true;
+        spinner.classList.remove('hidden');
+        loadLabel.textContent = 'Loading more products…';
+        endState.classList.add('hidden');
+
+        window.setTimeout(function () {
+          var catalogueNow = sortedAll();
+          var slice = catalogueNow.slice(nextIndex, nextIndex + BATCH);
+          nextIndex += slice.length;
+          shown = shown.concat(slice);
+          loading = false;
+          spinner.classList.add('hidden');
+          loadLabel.textContent = '';
+          render();
+        }, FETCH_MS);
+      }
+
+      function resetListing() {
+        shown = [];
+        nextIndex = 0;
+        loading = false;
+        spinner.classList.add('hidden');
+        loadLabel.textContent = '';
+        endState.classList.add('hidden');
+        render();
+        appendBatch();
+      }
+
+      sortSelect.addEventListener('change', function () {
+        sortMode = sortSelect.value;
+        resetListing();
+      });
+
+      new IntersectionObserver(
+        function (entries) {
+          entries.forEach(function (entry) {
+            if (!entry.isIntersecting || loading) return;
+            if (nextIndex >= sortedAll().length) return;
+            appendBatch();
+          });
+        },
+        { root: null, rootMargin: '120px', threshold: 0 }
+      ).observe(document.getElementById('sentinel'));
+
+      resetListing();
+    })();
+  </script>
+</body>
+</html>

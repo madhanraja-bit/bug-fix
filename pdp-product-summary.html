@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PDP Product Summary tab — walkthrough specimen (KJEI-T0078)</title>
+  <style>
+    :root {
+      --cream: #fdfaf5;
+      --blush: #fff7f8;
+      --rose: #cf254a;
+      --ink: #222222;
+      --muted: #999999;
+      --line: #f0e6e4;
+      --card: #ffffff;
+      --strike: #6e7191;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--cream);
+      color: var(--ink);
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    }
+    .demo-banner {
+      background: #1a1a1a;
+      color: #fff;
+      font-size: 12px;
+      padding: 8px 16px;
+      letter-spacing: 0.02em;
+    }
+    .demo-banner a { color: #ffb3c1; }
+    .note {
+      max-width: 960px;
+      margin: 12px 16px 0;
+      padding: 12px 14px;
+      background: var(--blush);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      font-size: 13px;
+      color: #444;
+      line-height: 1.45;
+    }
+    .note code { font-size: 12px; background: #fff; padding: 1px 5px; border-radius: 4px; }
+    .page {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 20px 16px 64px;
+    }
+    .crumb { font-size: 13px; color: #9b9b9b; margin-bottom: 16px; }
+    .crumb strong { color: #000; font-weight: 400; }
+    .layout {
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 40px;
+      align-items: start;
+    }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+    }
+    .gallery {
+      min-height: 360px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      font-size: 14px;
+      text-align: center;
+      padding: 24px;
+    }
+    h1 {
+      margin: 0 0 10px;
+      font-size: 30px;
+      font-weight: 400;
+      line-height: 1.25;
+    }
+    .sku-row {
+      font-size: 16px;
+      font-weight: 300;
+      margin-bottom: 12px;
+    }
+    .sku-row strong { font-weight: 500; margin-right: 6px; }
+    .price-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    .price-row .sale {
+      font-size: 30px;
+      font-weight: 500;
+    }
+    .price-row .compare {
+      font-size: 18px;
+      color: var(--strike);
+      text-decoration: line-through;
+    }
+    .glance {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      background: #fff;
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 14px;
+    }
+    .glance div {
+      padding: 14px;
+      text-align: center;
+      border-right: 1px solid #f5ecea;
+    }
+    .glance div:last-child { border-right: 0; }
+    .glance p { margin: 0; color: var(--muted); font-size: 12px; }
+    .glance strong { display: block; margin-top: 4px; font-size: 15px; }
+    .cta {
+      width: 100%;
+      height: 52px;
+      border: 0;
+      border-radius: 8px;
+      background: var(--rose);
+      color: #fff;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-bottom: 10px;
+    }
+    .linkish {
+      width: 100%;
+      border: 0;
+      background: #ffeef2;
+      color: #222;
+      padding: 14px;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-bottom: 20px;
+    }
+    .details {
+      background: #fff;
+      border-radius: 12px;
+      padding: 24px;
+      margin-top: 28px;
+    }
+    .details h2 {
+      margin: 0 0 6px;
+      font-size: 28px;
+    }
+    .style { color: var(--rose); font-weight: 300; font-size: 17px; margin-bottom: 8px; }
+    .short-desc {
+      margin: 0 0 18px;
+      font-size: 15px;
+      color: #555;
+      line-height: 1.5;
+    }
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .tab {
+      border: 0;
+      background: transparent;
+      padding: 10px 16px;
+      border-radius: 6px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      color: #000;
+    }
+    .tab.active {
+      background: var(--rose);
+      color: #fff;
+    }
+    .panel {
+      background: var(--cream);
+      border-radius: 12px;
+      padding: 16px;
+    }
+    .spec-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    @media (max-width: 560px) {
+      .spec-grid { grid-template-columns: 1fr; }
+    }
+    .spec-grid .wide { grid-column: 1 / -1; }
+    .spec-cell {
+      background: var(--card);
+      border-radius: 10px;
+      padding: 12px 14px;
+    }
+    .spec-cell p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 400;
+    }
+    /* Values not bold — BA preference / UC-PDP-001 BR-8 */
+    .spec-cell .spec-value {
+      display: block;
+      margin-top: 4px;
+      font-size: 15px;
+      font-weight: 400;
+      color: var(--ink);
+      line-height: 1.45;
+    }
+    .breakup {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--card);
+      border-radius: 12px;
+      overflow: hidden;
+      font-size: 14px;
+    }
+    .breakup th {
+      text-align: left;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      background: #fff;
+    }
+    .breakup td {
+      padding: 13px 14px;
+      border-bottom: 1px solid var(--line);
+      font-weight: 500;
+    }
+    .breakup tr:last-child td { border-bottom: 0; }
+    .breakup .amt { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .foot-note {
+      margin: 12px 0 0;
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+  </style>
+</head>
+<body>
+  <div class="demo-banner">
+    KJEI-T0085 · S-PDP-01 — Product Summary (hide Master Collection / Collection) · TD-0001 / UC-PDP-001 BR-8 ·
+    <a href="https://uat-ecom.kalyanjewellers.net/products/manikmandala-gold-ring?SKU=AQZMO0067-G22LRI1400001" target="_blank" rel="noopener">UAT Manikmandala</a>
+    · <a href="changelog.html">changelog</a>
+  </div>
+
+  <p class="note">
+    Walkthrough specimen for BA rulings 20 Oct 2026 (layout, KJEI-T0078) and
+    <strong>21 Oct 2026 UAT #3</strong> (omit Master Collection / Collection,
+    <a href="https://prana.praniontech.tools/projects/tasks/KJEI-T0085/edit">KJEI-T0085</a>).
+    Absorbed from <code>vk_own_understanding/Oct 7/ui-walkthough/pdp-manikmandala-table.html</code>.
+    <strong>Layout:</strong> cream panel <code>#fdfaf5</code>; active tab <code>#cf254a</code>; two-column fact tiles
+    (label above value); <strong>SKU description</strong> full-width; <strong>values not bold</strong> (normal weight).
+    <strong>Grid fields (order):</strong> SKU title, SKU, SKU description, Design number, Section, Type, Division,
+    Gender — [TD-0001] / UC-PDP-001 BR-8.
+    <strong>Never shown:</strong> Master collection, Collection (even when metafields are populated, e.g. MIA).
+    <strong>Also omit from grid:</strong> product Short description (<code>custom.short_description</code> — already under
+    Style No.); SKU short description. Omit empty/null rows on live storefront.
+    Related: <a href="pdp-price-breakup.html">Price Breakup</a> ·
+    <a href="pdp-stone-metal-details.html">stone/metal tables</a> ·
+    <a href="pdp-no-stone-hide-diamond-tab.html">no-stone hide Diamond</a> ·
+    <a href="pdp.html">PDP</a>.
+    Plays <strong>approved</strong> 21 Oct 2026 (KJEI-T0085). Layout chrome remains TD-0025; field omit cascade continues on this ticket.
+  </p>
+
+  <div class="page">
+    <div class="crumb">Home | <strong>Manikmandala Gold Ring</strong></div>
+
+    <div class="layout">
+      <div class="gallery">
+        Product media · Manikmandala · AQZMO0067<br />
+        (use live UAT gallery for photography)
+      </div>
+
+      <div>
+        <h1>Manikmandala Gold Ring</h1>
+        <div class="sku-row"><strong>SKU</strong> AQZMO0067-G22LRI1400001</div>
+        <div class="price-row">
+          <span class="sale">₹1,06,789.15</span>
+          <span class="compare">₹1,06,789.15</span>
+        </div>
+
+        <div class="glance">
+          <div>
+            <p>Metal</p>
+            <strong>920 NA</strong>
+          </div>
+          <div>
+            <p>Gemstone</p>
+            <strong>COLOUR STONE, SIGINITY</strong>
+          </div>
+        </div>
+
+        <button type="button" class="linkish" onclick="document.getElementById('product-tabs').scrollIntoView({behavior:'smooth'})">
+          View Product Details &amp; Price Breakup
+        </button>
+        <button type="button" class="cta">Add to Cart</button>
+      </div>
+    </div>
+
+    <div class="details" id="product-tabs">
+      <h2>Product Details</h2>
+      <div class="style">Style No. AQZMO0067</div>
+      <p class="short-desc">
+        Crafted in certified 916 gold with BIS hallmark assurance, quality-certified standards, and enduring trust.
+        <!-- product Short description — under Style No.; not repeated in Summary grid -->
+      </p>
+
+      <div class="tabs" role="tablist">
+        <button type="button" class="tab active" data-tab="summary">Product Summary</button>
+        <button type="button" class="tab" data-tab="diamond">Diamond / Gemstone Details</button>
+        <button type="button" class="tab" data-tab="metal">Metal Details</button>
+        <button type="button" class="tab" data-tab="price">Price Breakup</button>
+      </div>
+
+      <div class="panel" id="panel-summary">
+        <!-- TD-0001 summary rows · BA ruling 20 Oct 2026 chrome -->
+        <div class="spec-grid">
+          <div class="spec-cell">
+            <p>SKU title</p>
+            <span class="spec-value">Manikmandala Gold Ring</span>
+          </div>
+          <div class="spec-cell">
+            <p>SKU</p>
+            <span class="spec-value">AQZMO0067-G22LRI1400001</span>
+          </div>
+          <div class="spec-cell wide">
+            <p>SKU description</p>
+            <span class="spec-value">The Manikmandala Gold Ring features a bold circular statement design with a ruby-toned floral centre, interlocking openwork loops, and two concentric halos of white stones. Its symmetrical composition and intricate detailing give it a rich traditional character, making it ideal for festive wear, wedding occasions, and statement styling.</span>
+          </div>
+          <div class="spec-cell">
+            <p>Design number</p>
+            <span class="spec-value">AQZMO0067</span>
+          </div>
+          <div class="spec-cell">
+            <p>Section</p>
+            <span class="spec-value">RING</span>
+          </div>
+          <div class="spec-cell">
+            <p>Type</p>
+            <span class="spec-value">Plain Ring</span>
+          </div>
+          <div class="spec-cell">
+            <p>Division</p>
+            <span class="spec-value">Gold</span>
+          </div>
+          <div class="spec-cell">
+            <p>Gender</p>
+            <span class="spec-value">LADIES</span>
+          </div>
+        </div>
+        <p class="foot-note">
+          Field order / labels from TD-0001 §4 Summary tab (UAT #3: Master collection / Collection removed from display).
+          Product Short description stays under Style No. (not in this grid). SKU short description omitted from this layout.
+          Empty/null values omitted on live storefront. Values use normal weight (not bold).
+        </p>
+      </div>
+
+      <div class="panel" id="panel-diamond" hidden>
+        <table class="breakup" aria-label="Diamond / gemstone details">
+          <thead>
+            <tr><th>Category</th><th>Material</th><th>Quality</th><th>Qty</th><th class="amt">Weight</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>COLOUR STONE</td><td>SIGINITY</td><td>—</td><td>1</td><td class="amt">illustrative</td></tr>
+          </tbody>
+        </table>
+        <p class="foot-note">Diamond / Gemstone table look follows TD-0021; weights illustrative in this mock.</p>
+      </div>
+
+      <div class="panel" id="panel-metal" hidden>
+        <table class="breakup" aria-label="Metal details">
+          <thead>
+            <tr><th>Material</th><th>Purity</th><th>Qty</th><th class="amt">Weight</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Gold</td><td>920</td><td>1</td><td class="amt">illustrative</td></tr>
+          </tbody>
+        </table>
+        <p class="foot-note">Metal table look follows TD-0021; weights illustrative in this mock.</p>
+      </div>
+
+      <div class="panel" id="panel-price" hidden>
+        <p style="margin:0;font-size:14px;line-height:1.5;color:#555">
+          Price Breakup chrome is the sibling specimen
+          <a href="pdp-price-breakup.html">pdp-price-breakup.html</a> (TD-0023 / TD-0020).
+          Not restyled in this absorb.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    var tabs = document.querySelectorAll(".tab");
+    var panels = {
+      summary: document.getElementById("panel-summary"),
+      diamond: document.getElementById("panel-diamond"),
+      metal: document.getElementById("panel-metal"),
+      price: document.getElementById("panel-price")
+    };
+    tabs.forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        tabs.forEach(function (t) { t.classList.remove("active"); });
+        btn.classList.add("active");
+        Object.keys(panels).forEach(function (key) {
+          panels[key].hidden = key !== btn.dataset.tab;
+        });
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rings | Kalyan Jewellers — Client Demo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Italiana&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/storefront.css" />
+  <link rel="stylesheet" href="css/collections.css" />
+  <link rel="stylesheet" href="css/demo.css" />
+  <link rel="stylesheet" href="css/atc-demo.css" />
+  <style>
+    .heading-font { font-family: Italiana, Georgia, serif; }
+    .font-helvetica-light { font-family: "Helvetica Neue LT Std 45 Light", "Helvetica Neue", Helvetica, Arial, sans-serif; font-weight: 300; }
+    .font-helvetica-otf { font-family: "Helvetica Neue OTF", "Helvetica Neue", Helvetica, Arial, sans-serif; }
+    .font-serif { font-family: "Helvetica Neue LT Std", "Helvetica Neue", Helvetica, Arial, sans-serif; }
+  </style>
+</head>
+<body>
+  <div class="demo-banner">S-ATC demo · <a href="plp-auto-load.html" style="color:#ffb3c1">S-PLP-03 auto-load</a> · <a href="plp-sticky-filter.html" style="color:#ffb3c1">S-PLP-04 sticky Filter (KJEI-T0081)</a></div>
+  <div id="site-header"></div>
+
+  <!-- PLP toolbar — collections.$handle.tsx -->
+  <div class="bg-[#f8f7f1] flex flex-col py-8 2xl:px-[5rem] lg:px-[4rem] p-6 lg:block hidden">
+    <div class="flex items-center gap-3">
+      <button type="button" class="p-2 rounded bg-black text-white shadow-sm cursor-pointer" aria-label="Filters">▣</button>
+      <h1 class="text-4xl font-helvetica-light text-[#999]">
+        Rings
+        <span class="text-3xl font-normal text-[#000] font-helvetica-otf normal-case" id="plp-count">(4 items)</span>
+      </h1>
+    </div>
+    <div class="mt-2 flex items-center justify-between gap-4 text-[#000] md:text-[13px]">
+      <div class="font-helvetica-light text-sm text-gray-600">
+        <a href="index.html" class="hover:underline">Home</a> / Rings
+      </div>
+      <div class="relative flex items-center gap-2">
+        <span class="text-[#000] text-lg">Sort By:</span>
+        <button type="button" class="rounded bg-transparent text-[#a30014] text-lg cursor-pointer">Featured</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile PLP title -->
+  <div class="bg-[#f8f7f1] p-6 lg:hidden">
+    <h1 class="text-3xl font-helvetica-light text-[#999]">Rings <span id="plp-count-m" class="text-[#000]">(4)</span></h1>
+  </div>
+
+  <div class="collection 2xl:px-[5rem] lg:px-[4rem] p-6" style="position:relative">
+    <div class="products-grid" id="plp-grid"></div>
+  </div>
+
+  <script src="js/atc-engine.js"></script>
+  <script src="js/atc-contracts.js"></script>
+  <script src="js/shared-header.js"></script>
+  <script src="js/atc-ui.js"></script>
+  <script>
+    DemoHeader.syncBadges(DemoCart.getCount());
+    document.querySelectorAll('form[action="plp.html"]').forEach((form) => {
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        DemoAtcUi.showFinding(
+          'S-PLP-02 · finding',
+          'Search and filter field lists are open',
+          'Searchable fields are <code>OI-05</code>. Filter facets are <code>OI-06</code>. Hydrogen uses Shopify inbuilt search. Do not Then a field list from the mapping note.',
+        );
+      });
+    });
+    const products = Object.values(DemoCart.PRODUCTS);
+    document.getElementById('plp-count').textContent = '(' + products.length + ' items)';
+    document.getElementById('plp-count-m').textContent = '(' + products.length + ')';
+
+    const grid = document.getElementById('plp-grid');
+    products.forEach((p) => {
+      grid.innerHTML += `
+        <a class="group relative block rounded-xl border border-[#d9dbe9] bg-[#fdfaf5] p-1 transition-all duration-300 hover:shadow-[0_8px_25px_rgba(0,0,0,0.15)]" href="pdp.html?handle=${p.handle}&sku=${p.defaultSku || 'NAGAM-22K-5G'}">
+          <div class="relative rounded-lg bg-[#fdfaf5] p-3">
+            <button type="button" class="absolute top-4 right-3 z-10" aria-label="Add to wishlist" onclick="event.preventDefault()">
+              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="text-gray-300 transition">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+              </svg>
+            </button>
+            <img src="${p.image}" alt="${p.title}" class="mx-auto h-[310px] w-full object-contain bg-white" />
+          </div>
+          <div class="p-3">
+            <div class="text-[18px] font-medium text-[#c13b59]">${DemoCart.formatINR(p.price)}</div>
+            <p class="mt-1 font-sans text-[11px] uppercase tracking-wide text-gray-500">${p.defaultSku || ''} · SKU aggregate</p>
+            <h4 class="mt-1 mb-[2px] line-clamp-2 text-sm leading-5 text-[#333]">${p.title}</h4>
+          </div>
+        </a>`;
+    });
+  </script>
+</body>
+</html>

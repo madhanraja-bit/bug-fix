@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Product | Kalyan Jewellers — Client Demo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Italiana&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/storefront.css" />
+  <link rel="stylesheet" href="css/demo.css" />
+  <link rel="stylesheet" href="css/atc-demo.css" />
+  <style>
+    .font-helvetica-light { font-family: "Helvetica Neue LT Std 45 Light", "Helvetica Neue", Helvetica, Arial, sans-serif; font-weight: 300; }
+    .font-helvetica-otf { font-family: "Helvetica Neue OTF", "Helvetica Neue", Helvetica, Arial, sans-serif; }
+    .font-serif { font-family: "Helvetica Neue LT Std", "Helvetica Neue", Helvetica, Arial, sans-serif; }
+  </style>
+</head>
+<body>
+  <div class="demo-banner">S-ATC demo</div>
+  <div id="site-header"></div>
+
+  <!-- PDP — products.$handle.tsx above-the-fold -->
+  <div class="bg-[#fdfaf5] 2xl:px-[5rem] lg:px-[4rem]">
+    <div class="text-[12px] leading-[15px] md:text-[14px] md:leading-normal px-[15px] md:px-6 pt-0 md:pt-4 mt-[30px] md:mt-0 mb-[15px] md:mb-0 font-helvetica-light flex items-center gap-1">
+      <a href="index.html" class="transition hover:text-[#333] text-[#9B9B9B] md:text-black">Home</a>
+      <span class="text-[#9B9B9B] md:text-[#ccc]">|</span>
+      <span class="text-black" id="crumb-title">Product</span>
+    </div>
+
+    <div class="mx-auto px-[15px] py-0 md:px-6 md:py-10 w-full flex flex-col lg:flex-row lg:gap-[5rem] items-center">
+
+      <!-- LEFT: Gallery -->
+      <div class="flex gap-4 items-center justify-center w-full lg:w-[55%]">
+        <div class="hidden lg:flex flex-col gap-3 max-h-[500px] overflow-hidden justify-items-start">
+          <div class="flex flex-col items-center gap-2">
+            <button type="button" class="p-2 bg-white shadow rounded-full hover:bg-gray-100 disabled:opacity-30" aria-label="Up">▲</button>
+            <div class="flex flex-col gap-3 bg-white" id="thumb-col"></div>
+            <button type="button" class="p-2 bg-white shadow rounded-full hover:bg-gray-100 disabled:opacity-30" aria-label="Down">▼</button>
+          </div>
+        </div>
+
+        <div class="relative flex-1 flex items-center justify-center bg-[#fdfaf5] rounded-lg p-0 md:p-6 pb-6 md:pb-6 group">
+          <div class="w-full h-full overflow-hidden">
+            <div class="flex h-full">
+              <div class="min-w-full h-full flex items-center justify-center">
+                <img id="pdp-image" src="" alt="" class="w-[400px] max-w-full h-[400px] md:w-auto md:h-auto md:max-h-full md:max-w-full object-contain cursor-pointer" />
+              </div>
+            </div>
+          </div>
+          <div class="lg:hidden absolute bottom-2 left-1/2 -translate-x-1/2 flex items-center gap-2" id="dots"></div>
+        </div>
+      </div>
+
+      <!-- RIGHT: Info -->
+      <div class="w-full lg:w-[45%]">
+        <div class="space-y-6">
+          <p id="pdp-title" class="mb-[22px] md:mb-0 text-[30px] leading-[39px] md:text-[35px] md:leading-normal font-normal text-[#000] font-helvetica-otf"></p>
+
+          <div class="flex items-center justify-start mb-2 md:mb-0">
+            <div class="flex flex-row items-center text-black w-full">
+              <div class="flex items-center text-[18px] text-[#000] md:mr-4" style="margin-right:10px">
+                <strong class="font-helvetica-light font-light" style="margin-right:5px">SKU</strong>
+                <span id="pdp-sku" class="font-helvetica-light font-light"></span>
+              </div>
+              <div class="flex items-center gap-1 md:gap-3 flex-wrap">
+                <div class="flex items-center justify-between h-[28px] md:w-auto md:h-auto md:justify-start md:gap-1 text-[28px] md:text-[24px]" style="width:125px" aria-label="No rating yet">
+                  <span class="text-black leading-none">☆</span>
+                  <span class="text-black leading-none">☆</span>
+                  <span class="text-black leading-none">☆</span>
+                  <span class="text-black leading-none">☆</span>
+                  <span class="text-black leading-none">☆</span>
+                </div>
+                <button type="button" class="hover:underline hover:text-black font-helvetica-light font-light cursor-pointer text-[#000] text-[18px]" style="margin-left:10px">Write a review</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex flex-wrap items-center justify-start gap-3 md:gap-4">
+            <div class="flex items-center gap-2 md:gap-3">
+              <span id="pdp-price" class="text-[32px] md:text-3xl text-[#000]" style='font-family: "Helvetica Neue LT Pro 65 Medium", "Helvetica Neue", sans-serif; font-weight: 500'></span>
+              <span id="pdp-compare" class="line-through text-[#6e7191] text-[22px] md:text-lg" style='font-family: "Helvetica Neue LT Pro 65 Medium", "Helvetica Neue", sans-serif; font-weight: 500; display:none'></span>
+            </div>
+            <div class="relative inline-block ml-[14px] md:ml-3">
+              <div class="bg-[#cf254a] text-white text-xs md:text-[14px] px-3 md:px-4 py-1.5 md:py-2 font-helvetica-light font-light md:font-sans md:font-bold rounded-r-[3px] md:rounded-r-md">Special Offer</div>
+              <div class="absolute left-0 top-0 w-0 h-0 border-t-[14px] border-b-[14px] border-r-[14px] md:border-t-[18px] md:border-b-[18px] md:border-r-[18px] border-t-transparent border-b-transparent border-r-[#cf254a] -translate-x-full border-solid"></div>
+            </div>
+          </div>
+
+          <!-- Product Summary -->
+          <div class="flex flex-col md:gap-6 mb-4 md:mb-0">
+            <h3 class="text-[20px] md:text-2xl font-light font-helvetica-light text-[#000] md:pb-0 leading-none" style="padding-bottom:10px">Product Summary</h3>
+
+            <div class="flex flex-col" style="margin-bottom:4px">
+              <div class="bg-[#fdf9f9] md:bg-white py-3 md:p-4 grid text-center md:rounded-xl grid-cols-3 divide-x" style="border-top-left-radius:12px;border-top-right-radius:12px">
+                <div class="flex flex-col justify-center">
+                  <p class="text-[#999999] text-[10px] md:text-sm font-sans">Metal</p>
+                  <p class="text-[#000] text-[12px] md:text-lg font-sans mt-1">22K</p>
+                </div>
+                <div class="flex flex-col justify-center">
+                  <p class="text-[#999999] text-[10px] md:text-sm font-sans">Stone</p>
+                  <p id="summary-size" class="text-[#000] text-[12px] md:text-lg font-sans mt-1">0.5</p>
+                </div>
+                <div class="flex flex-col justify-center">
+                  <p class="text-[#999999] text-[10px] md:text-sm font-sans">Size</p>
+                  <p id="summary-label" class="text-[#000] text-[12px] md:text-lg font-sans mt-1">—</p>
+                </div>
+              </div>
+
+              <!-- Size options (demo: updates image/price like live selectedVariant) -->
+              <div class="product-options mt-3 px-2" id="option-wrap">
+                <h5 class="text-sm font-helvetica-light mb-2">Select SKU</h5>
+                <div class="product-options-grid flex flex-wrap gap-2" id="option-row"></div>
+              </div>
+
+              <div id="pdp-breakup" class="px-2 py-2 font-sans text-xs text-gray-600"></div>
+              <div class="bg-[#ffeef2] md:bg-transparent text-center flex items-center justify-center md:mt-2 gap-5" style="padding:12px;border-bottom-left-radius:12px;border-bottom-right-radius:12px">
+                <a href="pdp-stone-metal-details.html" class="cursor-pointer w-full bg-transparent md:bg-[#ffeef2] text-[#222222] md:text-gray-700 md:py-3 text-[16px] md:text-lg font-light font-helvetica-light md:font-semibold md:font-sans md:rounded-lg flex items-center justify-center gap-2 hover:opacity-80">
+                  View Product Details &amp; Price Breakup
+                </a>
+                <a href="pdp-product-summary.html" class="hidden md:inline text-xs text-[#cf254a] underline font-sans ml-2" title="KJEI-T0085 Product Summary specimen (no Master Collection / Collection)">Product Summary</a>
+                <a href="pdp-price-breakup.html" class="hidden md:inline text-xs text-[#cf254a] underline font-sans ml-2" title="KJEI-T0072 Price Breakup specimen">Price Breakup</a>
+                <a href="pdp-no-stone-hide-diamond-tab.html" class="hidden md:inline text-xs text-[#cf254a] underline font-sans ml-2" title="KJEI-T0069 no-stone specimen">No-stone hide Diamond tab</a>
+                <button type="button" class="hidden md:flex border p-2 rounded-lg w-[65px] h-[52px] flex-shrink-0 items-center justify-center cursor-pointer transition border-red-300 text-red-500 hover:bg-red-50" aria-label="Wishlist">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="flex md:flex items-stretch gap-2.5 w-full mt-2 md:mt-0 mb-1 md:mb-0">
+              <div class="flex-1">
+                <button
+                  type="button"
+                  id="add-to-cart-btn"
+                  class="flex w-full h-[52px] items-center justify-center gap-2.5 px-6 rounded-lg bg-[#cf254a] text-[16px] font-semibold text-white transition hover:bg-[#a61e3d] hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-60 font-sans cursor-pointer"
+                >
+                  <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+                    <path d="M6 6h12l-1 14H7L6 6zM9 6V5a3 3 0 016 0v1" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  Add to Cart
+                </button>
+              </div>
+            </div>
+
+            <div class="text-[14px] md:text-lg text-[#222222] md:text-gray-600 font-light font-helvetica-light md:font-normal md:font-sans mb-[10px] md:mb-0" style="margin-bottom:10px">
+              Elegant craftsmanship in fine gold and diamond. Demo product detail page matching live Kalyan Hydrogen PDP layout.
+            </div>
+          </div>
+
+          <!-- Desktop secondary CTAs -->
+          <div class="hidden md:grid grid-cols-2 gap-4">
+            <button type="button" class="w-full bg-[#cf254a] text-white py-3 text-lg rounded-lg font-semibold hover:bg-red-700 font-sans cursor-pointer">Request a Callback</button>
+            <button type="button" class="w-full border border-[#cf254a] text-[#cf254a] rounded-lg py-3 flex items-center justify-center gap-2 hover:bg-[#f4cfd3] cursor-pointer">
+              <span class="text-lg font-medium uppercase font-sans">Find in Store</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/atc-engine.js"></script>
+  <script src="js/atc-contracts.js"></script>
+  <script src="js/shared-header.js"></script>
+  <script src="js/atc-ui.js"></script>
+  <script>
+    DemoHeader.syncBadges(DemoCart.getCount());
+
+    const params = new URLSearchParams(location.search);
+    const handle = params.get('handle') || DemoCart.HANDLE;
+    const product = DemoCart.PRODUCTS[handle] || DemoCart.PRODUCTS[DemoCart.HANDLE];
+    const wantSku = params.get('sku') || DemoAtc.SKU_DEFAULT;
+    let selected = product.variants.find((v) => v.sku === wantSku) || product.variants.find((v) => v.sku === DemoAtc.SKU_DEFAULT) || product.variants[0];
+
+    const imgEl = document.getElementById('pdp-image');
+    const titleEl = document.getElementById('pdp-title');
+    const skuEl = document.getElementById('pdp-sku');
+    const priceEl = document.getElementById('pdp-price');
+    const compareEl = document.getElementById('pdp-compare');
+    const optionRow = document.getElementById('option-row');
+    const addBtn = document.getElementById('add-to-cart-btn');
+    const thumbCol = document.getElementById('thumb-col');
+    const st0 = DemoAtc.getState();
+
+    titleEl.textContent = product.title;
+    document.getElementById('crumb-title').textContent = product.title;
+    document.title = product.title + ' | S-ATC demo';
+    compareEl.style.display = 'inline';
+
+    function renderThumbs() {
+      const images = product.variants.map((v) => v.image);
+      const unique = [...new Set(images)];
+      thumbCol.innerHTML = '';
+      unique.forEach((src, i) => {
+        const im = document.createElement('img');
+        im.src = src;
+        im.width = 125;
+        im.height = 125;
+        im.alt = 'Product image ' + (i + 1);
+        im.className = 'w-[125px] h-[125px] object-contain cursor-pointer transition-all duration-200' +
+          (src === selected.image ? ' border-2 border-red-500 rounded-lg' : '');
+        im.addEventListener('click', () => {
+          const match = product.variants.find((v) => v.image === src) || selected;
+          selected = match;
+          render();
+        });
+        thumbCol.appendChild(im);
+      });
+    }
+
+    function render() {
+      const sold = DemoAtc.getState().flags.soldOutSku === selected.sku;
+      imgEl.src = selected.image;
+      imgEl.alt = product.title;
+      skuEl.textContent = selected.sku;
+      priceEl.textContent = DemoCart.formatINR(selected.price);
+      compareEl.textContent = DemoCart.formatINR(selected.originalPrice || Math.round(selected.price * 1.12));
+      const br = selected.breakup;
+      const breakupEl = document.getElementById('pdp-breakup');
+      if (br && breakupEl) {
+        breakupEl.textContent =
+          'SKU aggregate breakup (' + br.belongsTo + ' Highest) · Metal ' +
+          DemoCart.formatINR(br.metalValueInr) + ' · Stone ' +
+          DemoCart.formatINR(br.stoneDiamondValueInr) + ' · Making ' +
+          DemoCart.formatINR(br.makingChargeAmountInr) + ' · Discount ' +
+          br.discountPercent + '% / ' + DemoCart.formatINR(br.discountAmountInr) +
+          '. Add-to-cart later shows each combination’s own sale.';
+      }
+      document.getElementById('summary-size').textContent = '—';
+      document.getElementById('summary-label').textContent = selected.label;
+      addBtn.disabled = sold;
+      const label = sold ? 'Sold out' : 'Add to Cart';
+      addBtn.innerHTML = `<svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true"><path d="M6 6h12l-1 14H7L6 6zM9 6V5a3 3 0 016 0v1" stroke-linecap="round" stroke-linejoin="round"/></svg> ${label}`;
+
+      optionRow.innerHTML = '';
+      product.variants.forEach((v) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'product-options-item cursor-pointer px-4 py-2 text-sm bg-white';
+        btn.style.border = v.id === selected.id ? '1px solid black' : '1px solid #ccc';
+        btn.textContent = v.label;
+        btn.addEventListener('click', () => { selected = v; render(); });
+        optionRow.appendChild(btn);
+      });
+      renderThumbs();
+    }
+
+    addBtn.addEventListener('click', () => {
+      DemoAtcUi.beginAdd(selected.sku);
+    });
+
+    render();
+    if (st0.flags.pageNote === 'empty-candidates') {
+      /* click-through still required for S-ATC-10 */
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PDP Price Breakup tab — walkthrough specimen (KJEI-T0072)</title>
+  <style>
+    :root {
+      --cream: #fdfaf5;
+      --blush: #fff7f8;
+      --rose: #cf254a;
+      --ink: #222222;
+      --muted: #999999;
+      --line: #f0e6e4;
+      --card: #ffffff;
+      --strike: #6e7191;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--cream);
+      color: var(--ink);
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    }
+    .demo-banner {
+      background: #1a1a1a;
+      color: #fff;
+      font-size: 12px;
+      padding: 8px 16px;
+      letter-spacing: 0.02em;
+    }
+    .demo-banner a { color: #ffb3c1; }
+    .note {
+      max-width: 960px;
+      margin: 12px 16px 0;
+      padding: 12px 14px;
+      background: var(--blush);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      font-size: 13px;
+      color: #444;
+      line-height: 1.45;
+    }
+    .note code { font-size: 12px; background: #fff; padding: 1px 5px; border-radius: 4px; }
+    .page {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 20px 16px 64px;
+    }
+    .crumb { font-size: 13px; color: #9b9b9b; margin-bottom: 16px; }
+    .crumb strong { color: #000; font-weight: 400; }
+    .layout {
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 40px;
+      align-items: start;
+    }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+    }
+    .gallery {
+      min-height: 360px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      font-size: 14px;
+      text-align: center;
+      padding: 24px;
+    }
+    h1 {
+      margin: 0 0 10px;
+      font-size: 30px;
+      font-weight: 400;
+      line-height: 1.25;
+    }
+    .sku-row {
+      font-size: 16px;
+      font-weight: 300;
+      margin-bottom: 12px;
+    }
+    .sku-row strong { font-weight: 500; margin-right: 6px; }
+    .price-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    .price-row .sale {
+      font-size: 30px;
+      font-weight: 500;
+    }
+    .price-row .compare {
+      font-size: 18px;
+      color: var(--strike);
+      text-decoration: line-through;
+    }
+    .price-row .compare.same {
+      text-decoration: none;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .glance {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      background: #fff;
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 14px;
+    }
+    .glance div {
+      padding: 14px;
+      text-align: center;
+      border-right: 1px solid #f5ecea;
+    }
+    .glance div:last-child { border-right: 0; }
+    .glance p { margin: 0; color: var(--muted); font-size: 12px; }
+    .glance strong { display: block; margin-top: 4px; font-size: 15px; }
+    .cta {
+      width: 100%;
+      height: 52px;
+      border: 0;
+      border-radius: 8px;
+      background: var(--rose);
+      color: #fff;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-bottom: 10px;
+    }
+    .linkish {
+      width: 100%;
+      border: 0;
+      background: #ffeef2;
+      color: #222;
+      padding: 14px;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-bottom: 20px;
+    }
+    .details {
+      background: #fff;
+      border-radius: 12px;
+      padding: 24px;
+      margin-top: 28px;
+    }
+    .details h2 {
+      margin: 0 0 6px;
+      font-size: 28px;
+    }
+    .style { color: var(--rose); font-weight: 300; font-size: 17px; margin-bottom: 18px; }
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .tab {
+      border: 0;
+      background: transparent;
+      padding: 10px 16px;
+      border-radius: 6px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      color: #000;
+    }
+    .tab.active {
+      background: var(--rose);
+      color: #fff;
+    }
+    .panel {
+      background: var(--cream);
+      border-radius: 12px;
+      padding: 16px;
+    }
+    .hero-prices {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    @media (max-width: 560px) {
+      .hero-prices { grid-template-columns: 1fr; }
+    }
+    .hero-cell {
+      background: var(--card);
+      border-radius: 10px;
+      padding: 14px 16px;
+    }
+    .hero-cell p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .hero-cell strong {
+      display: block;
+      margin-top: 6px;
+      font-size: 20px;
+      font-weight: 600;
+    }
+    .hero-cell.sale strong { color: var(--rose); }
+    .range-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--card);
+      border-radius: 10px;
+      padding: 10px 14px;
+      margin-bottom: 12px;
+      font-size: 14px;
+    }
+    .range-pill span { color: var(--muted); font-size: 12px; font-weight: 600; }
+    .breakup {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--card);
+      border-radius: 12px;
+      overflow: hidden;
+      font-size: 14px;
+    }
+    .breakup th {
+      text-align: left;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      background: #fff;
+    }
+    .breakup td {
+      padding: 13px 14px;
+      border-bottom: 1px solid var(--line);
+      font-weight: 500;
+    }
+    .breakup tr:last-child td { border-bottom: 0; }
+    .breakup .amt { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .breakup .pct {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 500;
+      margin-left: 6px;
+    }
+    .breakup .discount .amt { color: #1a7f37; }
+    .breakup tfoot td {
+      background: var(--blush);
+      font-weight: 600;
+    }
+    .foot-note {
+      margin: 12px 0 0;
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+  </style>
+</head>
+<body>
+  <div class="demo-banner">
+    KJEI-T0072 · S-PDP-01 — Price Breakup tab UI · TD-0020 fields / empty rows ·
+    <a href="https://uat-ecom.kalyanjewellers.net/products/shaivala-22k-gold-ring-kalyan-jewellers?SKU=DLMIA2423-G22LRI2500008" target="_blank" rel="noopener">UAT Shaivala</a>
+    · <a href="changelog.html">changelog</a>
+  </div>
+
+  <p class="note">
+    Walkthrough specimen for BA ruling 20 Oct 2026 (absorbed from
+    <code>vk_own_understanding/Oct 7/ui-walkthough/pdp-shaivala-price-breakup.html</code>).
+    <strong>Layout:</strong> cream panel, hero Price / Compare-at, Amount Range pill, Component / Amount table.
+    <strong>Fields / empty rows:</strong> [TD-0020] / UC-PDP-001 BR-7 — omit missing/null; omit zero Price / Compare-at;
+    omit Amount Range if missing; no strike-through when Compare-at equals Price; show synced Cess <code>0</code>;
+    no Hydrogen recompute (<code>OI-52</code>).
+    <strong>Also:</strong> no gemstone on this SKU → Diamond / Gemstone tab omitted ([TD-0022]).
+    Numbers are <em>illustrative</em> until Alchemy writes metafields.
+    Related: <a href="pdp-product-summary.html">Product Summary</a> ·
+    <a href="pdp-stone-metal-details.html">stone/metal tables</a> ·
+    <a href="pdp-no-stone-hide-diamond-tab.html">no-stone hide Diamond</a> ·
+    <a href="pdp.html">PDP</a>.
+    Plays <strong>approved</strong> 20 Oct 2026 (KJEI-T0072). Hydrogen <strong>TD-0023 Accepted</strong> cites this specimen.
+  </p>
+
+  <div class="page">
+    <div class="crumb">Home | <strong>Shaivala | 22K Gold Ring | Kalyan Jewellers</strong></div>
+
+    <div class="layout">
+      <div class="gallery">
+        Product media · Shaivala · DLMIA2423<br />
+        (use live UAT gallery for photography)
+      </div>
+
+      <div>
+        <h1>Shaivala | 22K Gold Ring | Kalyan Jewellers</h1>
+        <div class="sku-row"><strong>SKU</strong> DLMIA2423-G22LRI2500008</div>
+        <div class="price-row">
+          <span class="sale">₹1,06,680.79</span>
+          <span class="compare same">Compare at same as sale</span>
+        </div>
+
+        <div class="glance">
+          <div>
+            <p>Metal</p>
+            <strong>920 NA</strong>
+          </div>
+          <div>
+            <p>Gemstone</p>
+            <strong>—</strong>
+          </div>
+        </div>
+
+        <button type="button" class="linkish" onclick="document.getElementById('product-tabs').scrollIntoView({behavior:'smooth'})">
+          View Product Details &amp; Price Breakup
+        </button>
+        <button type="button" class="cta">Add to Cart</button>
+      </div>
+    </div>
+
+    <div class="details" id="product-tabs">
+      <h2>Product Details</h2>
+      <div class="style">Style No. DLMIA2423</div>
+
+      <div class="tabs" role="tablist">
+        <button type="button" class="tab" data-tab="summary">Product Summary</button>
+        <!-- Diamond / Gemstone omitted — no stone lines (TD-0022) -->
+        <button type="button" class="tab" data-tab="metal">Metal Details</button>
+        <button type="button" class="tab active" data-tab="price">Price Breakup</button>
+      </div>
+
+      <div class="panel" id="panel-summary" hidden>
+        <p style="margin:0;font-size:14px;line-height:1.5;color:#555">
+          The Shaivala Gold Ring features a flowing diagonal centre highlighted by an organically textured panel…
+          Division Gold · Gender GENTS.
+          <!-- Master collection / Collection omitted from Summary — KJEI-T0085 / UAT #3 -->
+          Full Summary specimen: <a href="pdp-product-summary.html">pdp-product-summary.html</a>.
+        </p>
+      </div>
+
+      <div class="panel" id="panel-metal" hidden>
+        <table class="breakup" aria-label="Metal details">
+          <thead>
+            <tr><th>Material</th><th>Purity</th><th>Qty</th><th class="amt">Weight</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Gold</td><td>920</td><td>1</td><td class="amt">~5–6 g</td></tr>
+          </tbody>
+        </table>
+        <p class="foot-note">Metal table look follows TD-0021; weights illustrative in this mock.</p>
+      </div>
+
+      <div class="panel" id="panel-price">
+        <!-- TD-0020 §3 — Price Breakup design -->
+        <div class="hero-prices">
+          <div class="hero-cell sale">
+            <p>Price (sale)</p>
+            <strong>₹1,06,680.79</strong>
+          </div>
+          <div class="hero-cell">
+            <p>Compare-at (original)</p>
+            <strong>₹1,06,680.79</strong>
+          </div>
+        </div>
+
+        <div class="range-pill">
+          <span>Amount Range</span>
+          <strong>₹1,00,000 – ₹1,10,000</strong>
+        </div>
+
+        <table class="breakup" aria-label="Price breakup components">
+          <thead>
+            <tr>
+              <th>Component</th>
+              <th class="amt">Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Metal Value</td>
+              <td class="amt">₹92,450.00</td>
+            </tr>
+            <tr>
+              <td>Stone Value</td>
+              <td class="amt">₹0.00</td>
+            </tr>
+            <tr>
+              <td>Making Charges <span class="pct">12%</span></td>
+              <td class="amt">₹11,094.00</td>
+            </tr>
+            <tr class="discount">
+              <td>Making Charge Discount <span class="pct">20%</span></td>
+              <td class="amt">−₹2,218.80</td>
+            </tr>
+            <tr>
+              <td>GST <span class="pct">3%</span></td>
+              <td class="amt">₹3,039.76</td>
+            </tr>
+            <tr>
+              <td>Cess <span class="pct">0%</span></td>
+              <td class="amt">₹0.00</td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td>Sale price (synced)</td>
+              <td class="amt">₹1,06,680.79</td>
+            </tr>
+          </tfoot>
+        </table>
+
+        <p class="foot-note">
+          Field order / labels from TD-0020: Price, Compare-at, Amount Range, Metal Value, Stone Value,
+          Making Charges (% / value), Making Charge Discount (% / value), GST (% / value), Cess (% / value).
+          Missing metafields omitted on live storefront. % shown as secondary on the same row for scanability
+          (pairs still map 1:1 to Shopify keys). GST-inclusive sale; Hydrogen does not recompute the sum.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    var tabs = document.querySelectorAll(".tab");
+    var panels = {
+      summary: document.getElementById("panel-summary"),
+      metal: document.getElementById("panel-metal"),
+      price: document.getElementById("panel-price")
+    };
+    tabs.forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        tabs.forEach(function (t) { t.classList.remove("active"); });
+        btn.classList.add("active");
+        Object.keys(panels).forEach(function (key) {
+          panels[key].hidden = key !== btn.dataset.tab;
+        });
+      });
+    });
+  </script>
+</body>
+</html>

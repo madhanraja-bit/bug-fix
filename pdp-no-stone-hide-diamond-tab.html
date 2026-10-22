@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PDP hide Diamond tab when no stone — walkthrough specimen (KJEI-T0069)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Italiana&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/storefront.css" />
+  <link rel="stylesheet" href="css/demo.css" />
+  <link rel="stylesheet" href="css/atc-demo.css" />
+  <style>
+    .font-helvetica-light { font-family: "Helvetica Neue LT Std 45 Light", "Helvetica Neue", Helvetica, Arial, sans-serif; font-weight: 300; }
+    .font-helvetica-otf { font-family: "Helvetica Neue OTF", "Helvetica Neue", Helvetica, Arial, sans-serif; }
+    .font-serif { font-family: "Helvetica Neue LT Std", "Helvetica Neue", Helvetica, Arial, sans-serif; }
+    .detail-tab { display: none; }
+    .detail-tab.active { display: block; }
+    .spec-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .spec-grid .wide { grid-column: 1 / -1; }
+    .spec-cell { background: #fff; border-radius: 10px; padding: 12px 14px; }
+    .spec-cell p { margin: 0; color: #999; font-size: 12px; }
+    .spec-cell strong { display: block; margin-top: 4px; font-size: 15px; font-weight: 600; color: #222; }
+    .spec-table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 12px; overflow: hidden; font-size: 14px; }
+    .spec-table th { text-align: left; font-size: 12px; font-weight: 600; color: #999; padding: 12px 14px; border-bottom: 1px solid #f0e6e4; }
+    .spec-table td { padding: 13px 14px; border-bottom: 1px solid #f0e6e4; font-weight: 500; }
+    .spec-table tr:last-child td { border-bottom: 0; }
+    .fact-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 10px; }
+    .price-tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .sku-btn { cursor: pointer; padding: 8px 16px; font-size: 14px; background: #fff; border: 1px solid #ccc; }
+    .sku-btn.selected { border: 1px solid black; }
+    .play-note { margin: 12px 15px 0; padding: 10px 14px; background: #fff7f8; border: 1px solid #f0e6e4; border-radius: 8px; font-size: 13px; color: #444; max-width: 960px; }
+    .play-note a { color: #cf254a; text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="demo-banner">KJEI-T0069 · S-PDP-01 — Diamond / Gemstone tab omitted (no stone)</div>
+  <div id="site-header"></div>
+
+  <p class="play-note">
+    Specimen for BA ruling 19 Oct 2026: selected SKU has <strong>no diamond / gemstone composition lines</strong>, so
+    <strong>Diamond / Gemstone Details is not in the tab bar</strong> (no empty-stone message).
+    Seed: PRD-NAGAM / NAGAM-22K-5G (default) → switch to NAGAM-22K-3G.
+    With-stone table layout remains <a href="pdp-stone-metal-details.html">pdp-stone-metal-details.html</a> (KJEI-T0067 / TD-0021).
+  </p>
+
+  <div class="bg-[#fdfaf5] 2xl:px-[5rem] lg:px-[4rem]">
+    <div class="text-[12px] leading-[15px] md:text-[14px] md:leading-normal px-[15px] md:px-6 pt-0 md:pt-4 mt-[30px] md:mt-0 mb-[15px] md:mb-0 font-helvetica-light flex items-center gap-1">
+      <a href="index.html" class="transition hover:text-[#333] text-[#9B9B9B] md:text-black">Home</a>
+      <span class="text-[#9B9B9B] md:text-[#ccc]">|</span>
+      <span class="text-black" id="crumb-title">Nagam Gold Ring</span>
+    </div>
+
+    <div class="mx-auto px-[15px] py-0 md:px-6 md:py-10 w-full flex flex-col lg:flex-row lg:gap-[5rem] items-center">
+      <div class="flex gap-4 items-center justify-center w-full lg:w-[55%]">
+        <div class="relative flex-1 flex items-center justify-center bg-[#fdfaf5] rounded-lg p-0 md:p-6 pb-6 md:pb-6">
+          <div class="w-full h-full overflow-hidden flex items-center justify-center min-h-[280px] border border-[#f0e6e4] rounded-lg bg-white">
+            <p class="text-[#999] text-sm font-sans px-6 text-center">Demo media placeholder · PRD-NAGAM (S-PDP-01 seed)</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="w-full lg:w-[45%]">
+        <div class="space-y-6">
+          <p id="pdp-title" class="mb-[22px] md:mb-0 text-[30px] leading-[39px] md:text-[35px] md:leading-normal font-normal text-[#000] font-helvetica-otf">Nagam Gold Ring</p>
+
+          <div class="flex items-center justify-start mb-2 md:mb-0">
+            <div class="flex flex-row items-center text-black w-full">
+              <div class="flex items-center text-[18px] text-[#000] md:mr-4" style="margin-right:10px">
+                <strong class="font-helvetica-light font-light" style="margin-right:5px">SKU</strong>
+                <span id="pdp-sku" class="font-helvetica-light font-light">NAGAM-22K-5G</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex flex-wrap items-center justify-start gap-3 md:gap-4">
+            <div class="flex items-center gap-2 md:gap-3">
+              <span id="pdp-price" class="text-[32px] md:text-3xl text-[#000]" style='font-family: "Helvetica Neue LT Pro 65 Medium", "Helvetica Neue", sans-serif; font-weight: 500'>₹48,700</span>
+              <span id="pdp-compare" class="line-through text-[#6e7191] text-[22px] md:text-lg" style='font-family: "Helvetica Neue LT Pro 65 Medium", "Helvetica Neue", sans-serif; font-weight: 500'>₹51,000</span>
+            </div>
+          </div>
+
+          <div class="flex flex-col md:gap-6 mb-4 md:mb-0">
+            <h3 class="text-[20px] md:text-2xl font-light font-helvetica-light text-[#000] md:pb-0 leading-none" style="padding-bottom:10px">Product Summary</h3>
+
+            <div class="flex flex-col" style="margin-bottom:4px">
+              <div class="bg-[#fdf9f9] md:bg-white py-3 md:p-4 grid text-center md:rounded-xl grid-cols-2 divide-x" style="border-top-left-radius:12px;border-top-right-radius:12px">
+                <div class="flex flex-col justify-center">
+                  <p class="text-[#999999] text-[10px] md:text-sm font-sans">Metal</p>
+                  <p class="text-[#000] text-[12px] md:text-lg font-sans mt-1">920 Plain</p>
+                </div>
+                <div class="flex flex-col justify-center">
+                  <p class="text-[#999999] text-[10px] md:text-sm font-sans">Gemstone</p>
+                  <p class="text-[#000] text-[12px] md:text-lg font-sans mt-1">—</p>
+                </div>
+              </div>
+
+              <div class="product-options mt-3 px-2" id="option-wrap">
+                <h5 class="text-sm font-helvetica-light mb-2">Select SKU</h5>
+                <div class="product-options-grid flex flex-wrap gap-2" id="option-row">
+                  <button type="button" data-sku="5g" class="sku-btn selected">5 g · NAGAM-22K-5G</button>
+                  <button type="button" data-sku="3g" class="sku-btn">3 g · NAGAM-22K-3G</button>
+                </div>
+              </div>
+
+              <div class="bg-[#ffeef2] md:bg-transparent text-center flex items-center justify-center md:mt-2 gap-5" style="padding:12px;border-bottom-left-radius:12px;border-bottom-right-radius:12px">
+                <button type="button" id="view-details" class="cursor-pointer w-full bg-transparent md:bg-[#ffeef2] text-[#222222] md:text-gray-700 md:py-3 text-[16px] md:text-lg font-light font-helvetica-light md:font-semibold md:font-sans md:rounded-lg flex items-center justify-center gap-2 hover:opacity-80">
+                  View Product Details &amp; Price Breakup
+                </button>
+              </div>
+            </div>
+
+            <div class="flex md:flex items-stretch gap-2.5 w-full mt-2 md:mt-0 mb-1 md:mb-0">
+              <div class="flex-1">
+                <button type="button" class="flex w-full h-[52px] items-center justify-center gap-2.5 px-6 rounded-lg bg-[#cf254a] text-[16px] font-semibold text-white transition hover:bg-[#a61e3d] hover:opacity-95 font-sans cursor-pointer">
+                  Add to Cart
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mx-auto px-[15px] md:px-6 pb-16">
+      <div class="bg-white rounded-xl p-6 space-y-6">
+        <div class="grid lg:grid-cols-5 gap-16">
+          <div class="lg:col-span-3">
+            <div class="space-y-2">
+              <p class="text-3xl font-semibold text-[#000] font-sans">Product Details</p>
+              <div class="flex flex-wrap items-center gap-3 text-lg font-thin text-red-500 font-helvetica-light">
+                <p>Style No. PRD-NAGAM</p>
+              </div>
+              <p class="text-lg text-gray-600 leading-relaxed pt-5 font-sans">
+                Plain gold ring seed from S-PDP-01 — no diamond or gemstone composition lines on either SKU.
+              </p>
+            </div>
+
+            <div id="product-tabs" class="scroll-mt-64 mt-8">
+              <div class="flex gap-4 py-2 text-sm flex-wrap" id="tab-bar">
+                <button type="button" data-tab="summary" class="tab-btn px-4 py-2 rounded-md font-sans font-semibold text-[16px] bg-[#cf254a] text-white">Product Summary</button>
+                <!-- Diamond / Gemstone Details omitted — no stone composition lines (KJEI-T0069 / UC-PDP-001 BR-6) -->
+                <button type="button" data-tab="metal" class="tab-btn px-4 py-2 rounded-md font-semibold text-[16px] text-black">Metal Details</button>
+                <button type="button" data-tab="price" class="tab-btn px-4 py-2 rounded-md font-sans font-semibold text-[16px] text-black">Price Breakup</button>
+              </div>
+            </div>
+
+            <div>
+              <div class="detail-tab active" id="summary">
+                <div class="bg-[#fdfaf5] rounded-lg p-4">
+                  <div class="spec-grid">
+                    <div class="spec-cell"><p>SKU title</p><strong id="sum-title">Nagam Gold Ring · 5 g</strong></div>
+                    <div class="spec-cell"><p>SKU</p><strong id="sum-sku">NAGAM-22K-5G</strong></div>
+                    <div class="spec-cell wide"><p>SKU description</p><strong>Plain traditional gold ring (SEED-CAT). No diamond or gemstone composition lines.</strong></div>
+                    <div class="spec-cell"><p>Design number</p><strong>PRD-NAGAM</strong></div>
+                    <div class="spec-cell"><p>Section</p><strong>RING</strong></div>
+                    <div class="spec-cell"><p>Division</p><strong>Gold</strong></div>
+                    <div class="spec-cell"><p>Gender</p><strong>—</strong></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="detail-tab" id="metal">
+                <div class="bg-[#fdfaf5] rounded-lg p-4">
+                  <table class="spec-table">
+                    <thead>
+                      <tr><th>Material</th><th>Purity</th><th>Qty</th><th>Weight</th></tr>
+                    </thead>
+                    <tbody>
+                      <tr><td>Gold</td><td>920</td><td>1</td><td id="metal-wt">5.00 g</td></tr>
+                    </tbody>
+                  </table>
+                  <div class="fact-row">
+                    <div class="spec-cell"><p>Metal color</p><strong>Plain</strong></div>
+                    <div class="spec-cell"><p>Gross weight</p><strong id="gross-wt">5.40 g</strong></div>
+                    <div class="spec-cell"><p>Wide range</p><strong id="wide-range">4–6 g</strong></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="detail-tab" id="price">
+                <div class="bg-[#fdfaf5] rounded-lg p-4">
+                  <div class="price-tiles">
+                    <div class="spec-cell"><p>Price</p><strong id="break-sale">₹48,700</strong></div>
+                    <div class="spec-cell"><p>Compare at price</p><strong id="break-compare">₹51,000</strong></div>
+                    <div class="spec-cell"><p>Metal value</p><strong id="break-metal">₹40,500</strong></div>
+                    <div class="spec-cell"><p>Stone value</p><strong>₹0</strong></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/atc-engine.js"></script>
+  <script src="js/atc-contracts.js"></script>
+  <script src="js/shared-header.js"></script>
+  <script src="js/atc-ui.js"></script>
+  <script>
+    DemoHeader.syncBadges(DemoCart.getCount());
+
+    var skus = {
+      "5g": {
+        sku: "NAGAM-22K-5G",
+        title: "Nagam Gold Ring · 5 g",
+        sale: "₹48,700",
+        compare: "₹51,000",
+        metal: "₹40,500",
+        metalWt: "5.00 g",
+        gross: "5.40 g",
+        wide: "4–6 g"
+      },
+      "3g": {
+        sku: "NAGAM-22K-3G",
+        title: "Nagam Gold Ring · 3 g",
+        sale: "₹27,600",
+        compare: "₹28,900",
+        metal: "₹22,600",
+        metalWt: "3.00 g",
+        gross: "3.05 g",
+        wide: "2–4 g"
+      }
+    };
+
+    function selectSku(key) {
+      var data = skus[key];
+      document.getElementById("pdp-sku").textContent = data.sku;
+      document.getElementById("pdp-price").textContent = data.sale;
+      document.getElementById("pdp-compare").textContent = data.compare;
+      document.getElementById("sum-title").textContent = data.title;
+      document.getElementById("sum-sku").textContent = data.sku;
+      document.getElementById("metal-wt").textContent = data.metalWt;
+      document.getElementById("gross-wt").textContent = data.gross;
+      document.getElementById("wide-range").textContent = data.wide;
+      document.getElementById("break-sale").textContent = data.sale;
+      document.getElementById("break-compare").textContent = data.compare;
+      document.getElementById("break-metal").textContent = data.metal;
+      document.querySelectorAll(".sku-btn").forEach(function (btn) {
+        btn.classList.toggle("selected", btn.dataset.sku === key);
+      });
+      // Both SKUs have no stone lines — Diamond tab stays omitted (UC-PDP-002 BR-5).
+      showTab("summary");
+    }
+
+    function showTab(id) {
+      document.querySelectorAll(".tab-btn").forEach(function (item) {
+        item.className = item.className.replace(" bg-[#cf254a] text-white", " text-black");
+        if (item.dataset.tab === id) {
+          item.className = item.className.replace(" text-black", "") + " bg-[#cf254a] text-white";
+        }
+      });
+      document.querySelectorAll(".detail-tab").forEach(function (panel) {
+        panel.classList.remove("active");
+      });
+      document.getElementById(id).classList.add("active");
+    }
+
+    document.querySelectorAll(".sku-btn").forEach(function (button) {
+      button.addEventListener("click", function () {
+        selectSku(button.dataset.sku);
+      });
+    });
+
+    document.getElementById("view-details").addEventListener("click", function () {
+      document.getElementById("product-tabs").scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+
+    document.querySelectorAll(".tab-btn").forEach(function (button) {
+      button.addEventListener("click", function () {
+        showTab(button.dataset.tab);
+      });
+    });
+  </script>
+</body>
+</html>
