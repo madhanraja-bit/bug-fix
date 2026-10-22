@@ -2818,6 +2818,7 @@ main > .section.section-lavender:first-of-type {
     font-weight: 600;
     line-height: 0.75;
     padding: 0.35rem 0;
+    rotate: 180deg;
     white-space: nowrap;
   }
 
@@ -3596,15 +3597,25 @@ main > .section.section-lavender:first-of-type {
   .m-divider {
     display: flex;
     align-items: center;
-    gap: 0.85rem;
+    justify-content: center;
+    gap: 1rem;
     margin: 0.15rem 1.75rem 0.75rem;
     font-size: 1rem;
     font-weight: 600;
     letter-spacing: 0.28em;
+    line-height: 1;
+  }
+
+  .m-divider strong {
+    font-weight: 600;
+    white-space: nowrap;
+    /* Letter-spacing adds a gap after the last glyph and pushes the right rule out. */
+    margin-right: -0.28em;
+    font-size: 1.5rem;
   }
 
   .m-divider span {
-    flex: 1;
+    flex: 0 0 4rem;
     height: 1px;
     background: rgba(255, 255, 255, 0.72);
   }
